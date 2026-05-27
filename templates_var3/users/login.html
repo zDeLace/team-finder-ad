@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Вход{% endblock %}
-
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 {% endblock %}
-
 {% block content %}
 <div class="auth-card">
     <h2>Вход в систему</h2>
     <form method="post">
         {% csrf_token %}
-
-        {{ form.non_field_errors }}
-
-        <div class="form-field">
-            {{ form.email.label_tag }}
-            {{ form.email }}
-            {{ form.email.errors }}
+        {% if form.non_field_errors %}
+        <div class="non-field-errors">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
         </div>
-
+        {% endif %}
         <div class="form-field">
-            {{ form.password.label_tag }}
-            {{ form.password }}
-            {{ form.password.errors }}
+            <label for="id_username">Email</label>
+            <input type="email" name="username" id="id_username" placeholder="Email" required autofocus>
+            {% if form.username.errors %}
+                <ul class="errorlist">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
         </div>
-
+        <div class="form-field">
+            <label for="id_password">Пароль</label>
+            <input type="password" name="password" id="id_password" placeholder="Пароль" required>
+            {% if form.password.errors %}
+                <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
         <button type="submit">Войти</button>
     </form>
     <p class="auth-link">Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a></p>

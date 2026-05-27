@@ -19,16 +19,13 @@ class ProjectListView(View):
             Project.objects.select_related("owner")
             .prefetch_related("participants", "skills")
             .order_by("-created_at")
-         )
+        )
 
         active_skill = request.GET.get("skill", "").strip()
         if active_skill:
             projects_qs = projects_qs.filter(skills__name=active_skill)
 
-        all_skills = (
-            Skill.objects.values_list("name", flat=True)
-            .order_by("name")
-            )
+        all_skills = Skill.objects.values_list("name", flat=True).order_by("name")
 
         paginator = Paginator(projects_qs, settings.PAGINATE_BY)
         page_number = request.GET.get("page", 1)
@@ -55,8 +52,9 @@ class ProjectDetailView(View):
 
     def get(self, request, pk):
         project = get_object_or_404(
-            Project.objects.select_related("owner")
-            .prefetch_related("participants", "skills"),
+            Project.objects.select_related("owner").prefetch_related(
+                "participants", "skills"
+            ),
             pk=pk,
         )
         return render(request, self.template_name, {"project": project})
@@ -67,9 +65,7 @@ class ProjectCreateView(LoginRequiredMixin, View):
 
     def get(self, request):
         form = ProjectForm()
-        return render(
-            request, self.template_name, {"form": form, "is_edit": False}
-            )
+        return render(request, self.template_name, {"form": form, "is_edit": False})
 
     def post(self, request):
         form = ProjectForm(request.POST)
@@ -78,9 +74,7 @@ class ProjectCreateView(LoginRequiredMixin, View):
             project.owner = request.user
             project.save()
             return redirect("projects:detail", pk=project.pk)
-        return render(
-            request, self.template_name, {"form": form, "is_edit": False}
-            )
+        return render(request, self.template_name, {"form": form, "is_edit": False})
 
 
 class ProjectEditView(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -98,10 +92,9 @@ class ProjectEditView(LoginRequiredMixin, UserPassesTestMixin, View):
         form = ProjectForm(instance=project)
         return render(
             request,
-
             self.template_name,
-            {"form": form, "is_edit": True, "project": project}
-            )
+            {"form": form, "is_edit": True, "project": project},
+        )
 
     def post(self, request, pk):
         project = self.get_project(pk)
@@ -112,8 +105,8 @@ class ProjectEditView(LoginRequiredMixin, UserPassesTestMixin, View):
         return render(
             request,
             self.template_name,
-            {"form": form, "is_edit": True, "project": project}
-            )
+            {"form": form, "is_edit": True, "project": project},
+        )
 
 
 class ProjectCompleteView(LoginRequiredMixin, View):
@@ -121,18 +114,14 @@ class ProjectCompleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         if request.user != project.owner:
-            return JsonResponse(
-                {"status": "error", "detail": "Нет прав"}, status=403
-                )
+            return JsonResponse({"status": "error", "detail": "Нет прав"}, status=403)
         if project.status != Project.STATUS_OPEN:
             return JsonResponse(
                 {"status": "error", "detail": "Проект уже закрыт"}, status=400
-                )
+            )
         project.status = Project.STATUS_CLOSED
         project.save(update_fields=["status"])
-        return JsonResponse(
-            {"status": "ok", "project_status": "closed"}
-            )
+        return JsonResponse({"status": "ok", "project_status": "closed"})
 
 
 class ProjectToggleParticipateView(LoginRequiredMixin, View):
@@ -143,9 +132,9 @@ class ProjectToggleParticipateView(LoginRequiredMixin, View):
 
         if user == project.owner:
             return JsonResponse(
-                {"status": "error",
-                 "detail": "Автор не может быть участником"}, status=400
-                )
+                {"status": "error", "detail": "Автор не может быть участником"},
+                status=400,
+            )
 
         if user in project.participants.all():
             project.participants.remove(user)
@@ -161,9 +150,7 @@ class SkillAutocompleteView(View):
 
     def get(self, request):
         q = request.GET.get("q", "").strip()
-        skills = (
-            Skill.objects.filter(name__istartswith=q).order_by("name")[:10]
-            )
+        skills = Skill.objects.filter(name__istartswith=q).order_by("name")[:10]
         data = [{"id": s.id, "name": s.name} for s in skills]
         return JsonResponse(data, safe=False)
 
@@ -173,16 +160,14 @@ class ProjectSkillAddView(LoginRequiredMixin, View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         if request.user != project.owner:
-            return JsonResponse(
-                {"status": "error", "detail": "Нет прав"}, status=403
-                )
+            return JsonResponse({"status": "error", "detail": "Нет прав"}, status=403)
 
         try:
             body = json.loads(request.body)
         except (json.JSONDecodeError, ValueError):
             return JsonResponse(
                 {"status": "error", "detail": "Неверный JSON"}, status=400
-                )
+            )
 
         skill_id = body.get("skill_id")
         name = body.get("name", "").strip()
@@ -196,23 +181,22 @@ class ProjectSkillAddView(LoginRequiredMixin, View):
             skill, created = Skill.objects.get_or_create(name=name)
         else:
             return JsonResponse(
-                {
-                    "status": "error",
-                    "detail": "Нужен skill_id или name"
-                    }, status=400
-                )
+                {"status": "error", "detail": "Нужен skill_id или name"}, status=400
+            )
 
         if skill not in project.skills.all():
             project.skills.add(skill)
             added = True
 
-        return JsonResponse({
-            "skill_id": skill.id,
-            "id": skill.id,
-            "name": skill.name,
-            "created": created,
-            "added": added,
-        })
+        return JsonResponse(
+            {
+                "skill_id": skill.id,
+                "id": skill.id,
+                "name": skill.name,
+                "created": created,
+                "added": added,
+            }
+        )
 
 
 class ProjectSkillRemoveView(LoginRequiredMixin, View):
@@ -220,9 +204,7 @@ class ProjectSkillRemoveView(LoginRequiredMixin, View):
     def post(self, request, pk, skill_pk):
         project = get_object_or_404(Project, pk=pk)
         if request.user != project.owner:
-            return JsonResponse(
-                {"status": "error", "detail": "Нет прав"}, status=403
-                )
+            return JsonResponse({"status": "error", "detail": "Нет прав"}, status=403)
 
         skill = get_object_or_404(Skill, pk=skill_pk)
         project.skills.remove(skill)

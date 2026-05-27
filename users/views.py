@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,9 +7,27 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import DetailView
 
-from users.forms import RegisterForm, LoginForm, ProfileEditForm, CustomPasswordChangeForm
+from users.forms import (
+    RegisterForm,
+    LoginForm,
+    ProfileEditForm,
+    CustomPasswordChangeForm,
+)
 from users.models import User
-from django.conf import settings
+
+
+def paginate(request, queryset, per_page):
+    paginator = Paginator(queryset, per_page)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+    query_prefix = query_params.urlencode()
+    if query_prefix:
+        query_prefix += "&"
+
+    return page_obj, query_prefix
 
 
 class RegisterView(View):
@@ -68,15 +87,7 @@ class UserListView(View):
 
     def get(self, request):
         users_qs = User.objects.filter(is_active=True).order_by("-id")
-        paginator = Paginator(users_qs, settings.PAGINATE_BY)
-        page_number = request.GET.get("page", 1)
-        page_obj = paginator.get_page(page_number)
-
-        query_params = request.GET.copy()
-        query_params.pop("page", None)
-        query_prefix = query_params.urlencode()
-        if query_prefix:
-            query_prefix += "&"
+        page_obj, query_prefix = paginate(request, users_qs, settings.PAGINATE_BY)
 
         context = {
             "participants": page_obj,

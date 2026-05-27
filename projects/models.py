@@ -1,12 +1,16 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 from users.validators import validate_github_url
+
+SKILL_NAME_MAX_LENGTH = 124
+PROJECT_NAME_MAX_LENGTH = 200
+PROJECT_STATUS_MAX_LENGTH = 6
 
 
 class Skill(models.Model):
     name = models.CharField(
-        max_length=124,
+        max_length=SKILL_NAME_MAX_LENGTH,
         unique=True,
         verbose_name="Навык",
         db_index=True,
@@ -30,7 +34,7 @@ class Project(models.Model):
     ]
 
     name = models.CharField(
-        max_length=200,
+        max_length=PROJECT_NAME_MAX_LENGTH,
         verbose_name="Название проекта",
     )
     description = models.TextField(
@@ -57,7 +61,7 @@ class Project(models.Model):
         validators=[validate_github_url],
     )
     status = models.CharField(
-        max_length=6,
+        max_length=PROJECT_STATUS_MAX_LENGTH,
         choices=STATUS_CHOICES,
         default=STATUS_OPEN,
         verbose_name="Статус",

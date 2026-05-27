@@ -1,44 +1,13 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin
-    )
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 
-from users.validators import validate_phone, validate_github_url
+from users.managers import UserManager
+from users.validators import validate_github_url, validate_phone
 
-
-class UserManager(BaseUserManager):
-    def create_user(
-            self,
-            email: str,
-            name: str,
-            surname: str,
-            password: str = None,
-            **extra_fields
-            ):
-        if not email:
-            raise ValueError("Email обязателен")
-        email = self.normalize_email(email)
-        user = self.model(
-            email=email, name=name, surname=surname, **extra_fields
-            )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(
-            self,
-            email: str,
-            name: str,
-            surname: str,
-            password: str = None,
-            **extra_fields
-            ):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
-        return self.create_user(email, name, surname, password, **extra_fields)
+NAME_MAX_LENGTH = 124
+SURNAME_MAX_LENGTH = 124
+PHONE_MAX_LENGTH = 12
+ABOUT_MAX_LENGTH = 256
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -48,11 +17,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_index=True,
     )
     name = models.CharField(
-        max_length=124,
+        max_length=NAME_MAX_LENGTH,
         verbose_name="Имя",
     )
     surname = models.CharField(
-        max_length=124,
+        max_length=SURNAME_MAX_LENGTH,
         verbose_name="Фамилия",
     )
     avatar = models.ImageField(
@@ -61,7 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
     )
     phone = models.CharField(
-        max_length=12,
+        max_length=PHONE_MAX_LENGTH,
         blank=True,
         default="",
         verbose_name="Телефон",
@@ -76,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     about = models.TextField(
         blank=True,
         default="",
-        max_length=256,
+        max_length=ABOUT_MAX_LENGTH,
         verbose_name="О себе",
     )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
@@ -105,9 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if not self.pk and not self.avatar:
             from users.utils import generate_avatar
-            letter = (self.name[0] if self.name else "U")
+
+            letter = self.name[0] if self.name else "U"
             avatar_file = generate_avatar(letter)
-            self.avatar.save(
-                f"avatar_{self.email}.png", avatar_file, save=False
-                )
+            self.avatar.save(f"avatar_{self.email}.png", avatar_file, save=False)
         super().save(*args, **kwargs)

@@ -5,21 +5,93 @@ from projects.models import Project, Skill
 User = get_user_model()
 
 USERS = [
-    {"email": "alice@example.com", "name": "Алиса", "surname": "Иванова", "password": "password123", "about": "Python-разработчик, люблю open source"},
-    {"email": "bob@example.com", "name": "Боб", "surname": "Смирнов", "password": "password123", "about": "Frontend на React, ищу команду"},
-    {"email": "carol@example.com", "name": "Карина", "surname": "Козлова", "password": "password123", "about": "UI/UX дизайнер"},
-    {"email": "admin@example.com", "name": "Админ", "surname": "Системный", "password": "admin123", "is_staff": True, "is_superuser": True},
+    {
+        "email": "alice@example.com",
+        "name": "Алиса",
+        "surname": "Иванова",
+        "password": "password123",
+        "about": "Python-разработчик, люблю open source",
+    },
+    {
+        "email": "bob@example.com",
+        "name": "Боб",
+        "surname": "Смирнов",
+        "password": "password123",
+        "about": "Frontend на React, ищу команду",
+    },
+    {
+        "email": "carol@example.com",
+        "name": "Карина",
+        "surname": "Козлова",
+        "password": "password123",
+        "about": "UI/UX дизайнер",
+    },
+    {
+        "email": "admin@example.com",
+        "name": "Админ",
+        "surname": "Системный",
+        "password": "admin123",
+        "is_staff": True,
+        "is_superuser": True,
+    },
 ]
 
-SKILLS = ["Python", "Django", "React", "PostgreSQL", "Docker", "JavaScript", "TypeScript", "Figma", "FastAPI", "Vue.js"]
+SKILLS = [
+    "Python",
+    "Django",
+    "React",
+    "PostgreSQL",
+    "Docker",
+    "JavaScript",
+    "TypeScript",
+    "Figma",
+    "FastAPI",
+    "Vue.js",
+]
 
 PROJECTS = [
-    {"name": "TaskFlow", "description": "Менеджер задач с Kanban-доской и аналитикой производительности команды.", "owner_email": "alice@example.com", "skills": ["Python", "Django", "PostgreSQL"], "status": "open"},
-    {"name": "DevPortfolio", "description": "Платформа для создания красивых портфолио разработчиков за 5 минут.", "owner_email": "alice@example.com", "skills": ["React", "JavaScript"], "status": "open"},
-    {"name": "QuizMaster", "description": "Сервис для создания и прохождения интерактивных тестов и опросов.", "owner_email": "bob@example.com", "skills": ["Vue.js", "FastAPI", "PostgreSQL"], "status": "open"},
-    {"name": "BudgetBuddy", "description": "Приложение для учёта личных финансов с визуализацией расходов.", "owner_email": "bob@example.com", "skills": ["React", "TypeScript", "Docker"], "status": "closed"},
-    {"name": "DesignSystem", "description": "Библиотека UI-компонентов с документацией и дизайн-токенами.", "owner_email": "carol@example.com", "skills": ["Figma", "React", "TypeScript"], "status": "open"},
-    {"name": "OpenChat", "description": "Открытый мессенджер с end-to-end шифрованием и группами.", "owner_email": "carol@example.com", "skills": ["Python", "Django", "Docker"], "status": "open"},
+    {
+        "name": "TaskFlow",
+        "description": "Менеджер задач с Kanban-доской и аналитикой производительности команды.",
+        "owner_email": "alice@example.com",
+        "skills": ["Python", "Django", "PostgreSQL"],
+        "status": "open",
+    },
+    {
+        "name": "DevPortfolio",
+        "description": "Платформа для создания красивых портфолио разработчиков за 5 минут.",
+        "owner_email": "alice@example.com",
+        "skills": ["React", "JavaScript"],
+        "status": "open",
+    },
+    {
+        "name": "QuizMaster",
+        "description": "Сервис для создания и прохождения интерактивных тестов и опросов.",
+        "owner_email": "bob@example.com",
+        "skills": ["Vue.js", "FastAPI", "PostgreSQL"],
+        "status": "open",
+    },
+    {
+        "name": "BudgetBuddy",
+        "description": "Приложение для учёта личных финансов с визуализацией расходов.",
+        "owner_email": "bob@example.com",
+        "skills": ["React", "TypeScript", "Docker"],
+        "status": "closed",
+    },
+    {
+        "name": "DesignSystem",
+        "description": "Библиотека UI-компонентов с документацией и дизайн-токенами.",
+        "owner_email": "carol@example.com",
+        "skills": ["Figma", "React", "TypeScript"],
+        "status": "open",
+    },
+    {
+        "name": "OpenChat",
+        "description": "Открытый мессенджер с end-to-end шифрованием и группами.",
+        "owner_email": "carol@example.com",
+        "skills": ["Python", "Django", "Docker"],
+        "status": "open",
+    },
 ]
 
 

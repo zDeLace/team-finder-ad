@@ -32,9 +32,7 @@ class RegisterForm(forms.ModelForm):
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         label="Email",
-        widget=forms.EmailInput(
-            attrs={"placeholder": "Email", "autofocus": True}
-            ),
+        widget=forms.EmailInput(attrs={"placeholder": "Email", "autofocus": True}),
     )
     password = forms.CharField(
         label="Пароль",
@@ -56,9 +54,7 @@ class ProfileEditForm(forms.ModelForm):
         label="GitHub",
         required=False,
         validators=[validate_github_url],
-        widget=forms.URLInput(
-            attrs={"placeholder": "https://github.com/username"}
-            ),
+        widget=forms.URLInput(attrs={"placeholder": "https://github.com/username"}),
     )
 
     class Meta:
@@ -69,7 +65,7 @@ class ProfileEditForm(forms.ModelForm):
             "surname": forms.TextInput(attrs={"placeholder": "Фамилия"}),
             "about": forms.Textarea(
                 attrs={"placeholder": "Расскажите о себе", "rows": 3}
-                ),
+            ),
         }
 
     def clean_phone(self):

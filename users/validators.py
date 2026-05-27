@@ -1,4 +1,5 @@
 import re
+
 from django.core.exceptions import ValidationError
 
 
@@ -11,12 +12,10 @@ def validate_phone(value: str) -> str:
     pattern_8 = re.compile(r"^8(\d{10})$")
     pattern_plus7 = re.compile(r"^\+7(\d{10})$")
 
-    m = pattern_8.match(cleaned) or pattern_plus7.match(cleaned)
-    if not m:
-        raise ValidationError(
-            "Введите номер в формате 8XXXXXXXXXX или +7XXXXXXXXXX"
-        )
-    return f"+7{m.group(1)}"
+    match = pattern_8.match(cleaned) or pattern_plus7.match(cleaned)
+    if not match:
+        raise ValidationError("Введите номер в формате 8XXXXXXXXXX или +7XXXXXXXXXX")
+    return f"+7{match.group(1)}"
 
 
 def validate_github_url(value: str) -> None:

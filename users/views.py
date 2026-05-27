@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import DetailView
 
@@ -86,7 +86,7 @@ class UserListView(View):
     template_name = "users/participants.html"
 
     def get(self, request):
-        users_qs = User.objects.filter(is_active=True).order_by("-id")
+        users_qs = User.objects.select_related().filter(is_active=True).order_by("-id")
         page_obj, query_prefix = paginate(request, users_qs, settings.PAGINATE_BY)
 
         context = {
